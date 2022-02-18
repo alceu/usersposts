@@ -1,3 +1,47 @@
+# usersposts
+
+First steps:
+
+### `git clone`
+
+### `git flow init`
+
+### `cp example-.env .env`
+
+### `cp -r example-.vscode .vscode`
+
+### `npm install`
+
+### `npm prepare`
+
+That's it.
+
+## Git Flow 
+
+[https://danielkummer.github.io/git-flow-cheatsheet/](https://danielkummer.github.io/git-flow-cheatsheet/)
+
+New feature from develop: 
+
+### `git flow feature start my-first-feature`
+
+New feature from another: 
+
+### `git flow feature start my-second-feature feature/my-first-feature`
+
+Publish my feature: 
+ 
+### `git flow feature publish my-first-feature`
+
+Merge develop into my feature (do it before a merge request into develop): 
+
+### `git pull --all && git merge develop`
+
+Finish my feature (merge back to develop or original feature): 
+
+### `git flow feature finish my-first-feature`
+
+# React-scripts README:
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
