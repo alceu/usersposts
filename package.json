@@ -14,12 +14,18 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "./node_modules/.bin/eslint 'src/**/*.js'",
+    "build": "react-scripts build",
+    "prepare": "./node_modules/.bin/husky install",
+    "lint": "./node_modules/.bin/eslint",
+    "lint-all": "npm run lint -- 'src/**/*.js'",
     "lint-fix": "npm run lint -- --fix",
-    "format": "./node_modules/.bin/prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc.js"
+    "lint-fix-all": "npm run lint-all -- --fix",
+    "format": "./node_modules/.bin/prettier --config ./.prettierrc.js",
+    "format-all": "npm run format -- --write './**/*.{js,css,md,json}'",
+    "precommit": "./node_modules/.bin/lint-staged && CI=true npm run test",
+    "prepush": "CI=true npm run test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -39,6 +45,8 @@
   "devDependencies": {
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.4",
     "prettier": "^2.5.1"
   }
 }

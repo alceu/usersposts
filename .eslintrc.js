@@ -1,12 +1,17 @@
 module.exports = {
   env: {
-    browser: true,
     es2021: true,
+    node: true,
+    commonjs: true,
+    browser: true,
   },
+  plugins: ['prettier', 'react', 'react-hooks', 'testing-library', 'jest'],
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended',
     'plugin:prettier/recommended',
+    'plugin:react/recommended',
+    'plugin:testing-library/react',
+    'plugin:jest/recommended',
     // "airbnb",
   ],
   parserOptions: {
@@ -19,6 +24,5 @@ module.exports = {
   settings: {
     react: { version: 'detect' },
   },
-  plugins: ['react'],
   rules: {},
 };
