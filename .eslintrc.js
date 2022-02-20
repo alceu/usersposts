@@ -1,4 +1,4 @@
-const [WARNING] = [1];
+const [WARN] = [1];
 
 module.exports = {
   env: {
@@ -27,6 +27,7 @@ module.exports = {
     react: { version: 'detect' },
   },
   rules: {
-    'prettier/prettier': WARNING,
+    'prettier/prettier': WARN,
+    'no-unused-vars': WARN,
   },
 };
