@@ -34,7 +34,7 @@ Publish my feature:
 
 Merge develop into my feature (do it before a merge request into develop): 
 
-### `git pull --all && git merge develop`
+### `git pull origin develop`
 
 Finish my feature (merge back to develop or original feature): 
 
