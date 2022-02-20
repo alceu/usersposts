@@ -1,4 +1,4 @@
-# usersposts
+# usersposts-frontend
 
 First steps:
 
@@ -6,9 +6,9 @@ First steps:
 
 ### `git flow init`
 
-### `cp example-.env .env`
+### `cp sample-.env .env`
 
-### `cp -r example-.vscode .vscode`
+### `cp -r sample-.vscode .vscode`
 
 ### `npm install`
 
