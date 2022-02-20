@@ -1,3 +1,5 @@
+const [WARNING] = [1];
+
 module.exports = {
   env: {
     es2021: true,
@@ -24,5 +26,7 @@ module.exports = {
   settings: {
     react: { version: 'detect' },
   },
-  rules: {},
+  rules: {
+    'prettier/prettier': WARNING,
+  },
 };
