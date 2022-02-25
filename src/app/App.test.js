@@ -4,12 +4,14 @@ import { Provider } from 'react-redux';
 import store from './store';
 import App from './App';
 
-test('renders Users hard label', () => {
-  render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-  );
+describe('App base', () => {
+  it('renders main title', async () => {
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+    );
 
-  expect(screen.getByText(/Users/)).toBeInTheDocument();
+    expect(screen.getByText('Users posts')).toBeInTheDocument();
+  });
 });
