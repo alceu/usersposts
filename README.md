@@ -8,35 +8,39 @@ First steps:
 
 ### `cp sample-.env .env`
 
-### `cp -r sample-.vscode .vscode`
-
 ### `npm install`
 
 ### `npm prepare`
 
+For VStudio users:
+
+### `cp -r sample-.vscode .vscode`
+
+### `cp -r sample-.profile .profile`
+
 That's it.
 
-## Git Flow 
+## Git Flow
 
 [https://danielkummer.github.io/git-flow-cheatsheet/](https://danielkummer.github.io/git-flow-cheatsheet/)
 
-New feature from develop: 
+New feature from develop:
 
 ### `git flow feature start my-first-feature`
 
-New feature from another: 
+New feature from another:
 
 ### `git flow feature start my-second-feature feature/my-first-feature`
 
-Publish my feature: 
- 
+Publish my feature:
+
 ### `git flow feature publish my-first-feature`
 
-Merge develop into my feature (do it before a merge request into develop): 
+Merge develop into my feature (do it before a merge request into develop):
 
-### `git pull --all && git merge develop`
+### `git pull origin develop`
 
-Finish my feature (merge back to develop or original feature): 
+Finish my feature (merge back to develop or original feature):
 
 ### `git flow feature finish my-first-feature`
 
