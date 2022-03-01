@@ -1,5 +1,3 @@
-const [WARN] = [1];
-
 module.exports = {
   env: {
     es2021: true,
@@ -7,13 +5,20 @@ module.exports = {
     commonjs: true,
     browser: true,
   },
-  plugins: ['prettier', 'react', 'react-hooks', 'testing-library', 'jest'],
+  plugins: [
+    'prettier',
+    'react',
+    // 'testing-library', 'jest', 'jest-dom'
+  ],
   extends: [
+    'react-app',
+    'react-app/jest',
     'eslint:recommended',
     'plugin:prettier/recommended',
     'plugin:react/recommended',
-    'plugin:testing-library/react',
-    'plugin:jest/recommended',
+    // 'plugin:testing-library/react',
+    // 'plugin:jest/recommended',
+    // 'plugin:jest-dom/recommended',
     // "airbnb",
   ],
   parserOptions: {
@@ -27,7 +32,8 @@ module.exports = {
     react: { version: 'detect' },
   },
   rules: {
-    'prettier/prettier': WARN,
-    'no-unused-vars': WARN,
+    'prettier/prettier': 'WARN',
+    'no-unused-vars': 'WARN',
+    'react/prop-types': 'OFF',
   },
 };

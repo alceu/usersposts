@@ -1,21 +1,18 @@
 module.exports = {
-  // linters: {
   './**/*.js': [
     // '**/*.+(js|jsx|ts|graphql|vue)': [
+    //"*.css": "stylelint",
+    //"*.scss": "stylelint --syntax=scss"
     'npm run lint-fix -- --cache',
     'git add',
   ],
   './src/**/*.js': [
     // '**/*.+(js|jsx|ts|graphql|vue)': [
     'npm run test:staged',
-    // 'jest --findRelatedTests',
   ],
-  './**/*.+(js|md|css|json)': [
+  './**/*.+(js|md|scss|json)': [
     // '**/*.+(js|md|ts|css|sass|less|graphql|yml|yaml|scss|json|vue)': [
-    'npm run format', //"./node_modules/.bin/prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc.js",
+    'npm run format',
     'git add',
-    //"*.css": "stylelint",
-    //"*.scss": "stylelint --syntax=scss"
   ],
-  // },
 };
