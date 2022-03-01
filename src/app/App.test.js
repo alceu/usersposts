@@ -1,17 +1,14 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import store from './store';
+import { screen } from '@testing-library/react';
+import { render } from 'utils/test';
 import App from './App';
+
+jest.mock('features/user/Users', () => () => 'MockedUsers');
 
 describe('App base', () => {
   it('renders main title', async () => {
-    render(
-      <Provider store={store}>
-        <App />
-      </Provider>,
-    );
+    render(<App />);
 
-    expect(screen.getByText('Users posts')).toBeInTheDocument();
+    expect(screen.getByRole('heading')).toHaveTextContent('Users posts');
   });
 });

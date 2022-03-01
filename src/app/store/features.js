@@ -1,5 +1,7 @@
 import user from 'features/user';
 
-export default {
+const reducers = {
   user,
 };
+
+export default reducers;
