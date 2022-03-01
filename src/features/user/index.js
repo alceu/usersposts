@@ -20,12 +20,11 @@ export const { setSelected } = slice.actions;
 
 const endpoint = '/users';
 
-export const fetchList = () => (dispatch) => {
+export const fetchList = () => (dispatch) =>
   api.get(endpoint).then((response) => {
     const { data: users } = response;
 
     return dispatch(addUsers(users));
   });
-};
 
 export default slice.reducer;
