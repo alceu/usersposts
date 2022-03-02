@@ -3,9 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
-import Button from 'react-bootstrap/Button';
+import { Posts } from 'features/post/Posts';
 
 import { setSelected as setSelectedUser, fetchList as fetchUsers } from '.';
 
@@ -87,6 +88,7 @@ export default function Users() {
             <Button variant="primary" onClick={handleShowMoreClick} disabled={listingIndex >= fetchedUsers.length}>
               Show more
             </Button>
+            {selectedUserId && <Posts userId={selectedUserId} />}
           </Col>
         </Row>
       );
