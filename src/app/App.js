@@ -11,9 +11,9 @@ import './App.scss';
 export default function App() {
   return (
     <Container>
-      <h1>Users posts</h1>
       <Row fluid="md">
         <Col>
+          <h1>Users posts</h1>
           <Users />
         </Col>
       </Row>
