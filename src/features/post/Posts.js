@@ -10,7 +10,7 @@ import { fetchList as fetchPosts } from '.';
 
 import { setSelected as setSelectedUser } from 'features/user';
 
-export function Posts({ userId: userIdParam = null }) {
+export default function Posts({ userId: userIdParam = null }) {
   const { posts, users, selectedUserId } = useSelector(
     ({
       entities,
@@ -95,14 +95,14 @@ export function Posts({ userId: userIdParam = null }) {
           onHide={handleCloseClick}
           onExited={handleExitedModalTransition}>
           <Modal.Header closeButton>
-            <Modal.Title>{user.name}</Modal.Title>
+            <Modal.Title role="heading">{user.name}</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body role="list">
             {listingPosts.map((postId) => {
               const post = posts.byId[postId];
 
               return (
-                <Card key={postId}>
+                <Card key={postId} role="listitem">
                   <Card.Header>
                     <Card.Title>{post.title}</Card.Title>
                   </Card.Header>
