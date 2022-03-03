@@ -8,11 +8,11 @@ const defaultConfig = {
   },
 };
 
-const baseURL = process.env.REACT_APP_API_URL || null;
+export const apiUrl = process.env.REACT_APP_API_URL || '';
 
 const apiInstance = axios.create({
   ...defaultConfig,
-  baseURL,
+  baseURL: apiUrl,
 });
 
 export default apiInstance;
