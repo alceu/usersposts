@@ -3,8 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
-import LoadingSpinner from 'components/LoadingSpinner';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import LoadingSpinner from 'components/LoadingSpinner';
+import Posts from 'features/post/Posts';
 
 import { setSelected as setSelectedUser, fetchList as fetchUsers } from '.';
 
@@ -44,7 +46,7 @@ export default function Users() {
     let renderBodyResult;
 
     if (fetchingError) {
-      renderBodyResult = <p role="alert">Fetching users error</p>;
+      renderBodyResult = <Alert variant="danger">Fetching users error</Alert>;
     } else if (loadingStep < READY) {
       renderBodyResult = <LoadingSpinner ariaLabel="Loading users" />;
     } else {
@@ -56,8 +58,8 @@ export default function Users() {
       };
       const listingUsers = [...fetchedUsers].sort(usersSort).slice(0, listingIndex);
 
-      const handleUserClick = (userId) => dispatch(setSelectedUser(userId));
-      const handleMoreClick = () => setListingIndex((current) => current + listingLimit);
+      const handleSelectUserClick = (userId) => dispatch(setSelectedUser(userId));
+      const handleShowMoreClick = () => setListingIndex((current) => current + listingLimit);
 
       renderBodyResult = (
         <Row>
@@ -77,15 +79,16 @@ export default function Users() {
                     aria-selected={userId === selectedUserId}
                     active={userId === selectedUserId}
                     action
-                    onClick={() => handleUserClick(userId)}>
+                    onClick={() => handleSelectUserClick(userId)}>
                     {user.name}
                   </ListGroup.Item>
                 );
               })}
             </ListGroup>
-            <Button variant="primary" onClick={handleMoreClick} disabled={listingIndex >= users.allIds.length}>
-              Mostrar mais
+            <Button variant="primary" onClick={handleShowMoreClick} disabled={listingIndex >= fetchedUsers.length}>
+              Show more
             </Button>
+            {selectedUserId && <Posts userId={selectedUserId} />}
           </Col>
         </Row>
       );
