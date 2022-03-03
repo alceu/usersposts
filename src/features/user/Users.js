@@ -6,7 +6,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
-import { Posts } from 'features/post/Posts';
+import Posts from 'features/post/Posts';
 
 import { setSelected as setSelectedUser, fetchList as fetchUsers } from '.';
 
