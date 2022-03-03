@@ -6,13 +6,15 @@ import { render } from 'utils/test';
 import { apiUrl } from 'app/api';
 import Users from './Users';
 
-const mockedPostsTextResult = 'MockedPosts';
-jest.mock('features/post/Posts', () => () => mockedPostsTextResult);
+const renderPostsMockResult = 'MockedPosts';
+jest.mock('features/post/Posts', () => () => renderPostsMockResult);
 
 describe('Users list', () => {
   const mockedJsonResponse = [
     { id: 1, name: 'Abraham Smith' },
     { id: 2, name: 'Johana Misty' },
+    { id: 3, name: 'Miro Jones' },
+    { id: 4, name: 'Sara Silva' },
   ];
 
   const requestUrl = `${apiUrl}/users`;
@@ -37,12 +39,17 @@ describe('Users list', () => {
 
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
 
-    const usersListItems = await screen.findAllByRole('option');
-    expect(usersListItems).toHaveLength(mockedJsonResponse.length);
-    expect(usersListItems[0]).toHaveTextContent(mockedJsonResponse[0].name);
-    expect(usersListItems[1]).toHaveTextContent(mockedJsonResponse[1].name);
+    const usersOptions = await screen.findAllByRole('option');
+    expect(usersOptions).toHaveLength(3);
 
     expect(screen.queryByLabelText('Loading users')).not.toBeInTheDocument();
+
+    const [firstUserOption, secondUserOption, thirdUserOption] = usersOptions;
+    const [firstUserJsonResponse, secondUserJsonResponse, thirdUserJsonResponse] = mockedJsonResponse;
+
+    expect(firstUserOption).toHaveTextContent(firstUserJsonResponse.name);
+    expect(secondUserOption).toHaveTextContent(secondUserJsonResponse.name);
+    expect(thirdUserOption).toHaveTextContent(thirdUserJsonResponse.name);
   });
 
   it('fetches and shows error message on request failure', async () => {
@@ -60,12 +67,32 @@ describe('Users list', () => {
     render(<Users />);
 
     expect(screen.queryByRole('option', { selected: true })).not.toBeInTheDocument();
-    expect(screen.queryByText(mockedPostsTextResult)).not.toBeInTheDocument();
+    expect(screen.queryByText(renderPostsMockResult)).not.toBeInTheDocument();
 
     const [, secondUserOption] = await screen.findAllByRole('option');
     fireEvent.click(secondUserOption);
+
     expect(secondUserOption).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByText('Loading users')).not.toBeInTheDocument();
-    expect(screen.getByText(mockedPostsTextResult)).toBeInTheDocument();
+    expect(screen.getByText(renderPostsMockResult)).toBeInTheDocument();
+  });
+
+  it('shows the fourth user after clicking show more button', async () => {
+    render(<Users />);
+
+    let usersOptions = await screen.findAllByRole('option');
+    expect(usersOptions).toHaveLength(3);
+
+    const [, , , fourthUserJsonResponse] = mockedJsonResponse;
+    expect(screen.queryByText(fourthUserJsonResponse.name)).not.toBeInTheDocument();
+
+    const showMoreButton = screen.getByRole('button', { name: 'Show more' });
+    fireEvent.click(showMoreButton);
+
+    usersOptions = await screen.findAllByRole('option');
+    expect(usersOptions).toHaveLength(4);
+
+    const [, , , fourthUserOption] = usersOptions;
+    expect(fourthUserOption).toHaveTextContent(fourthUserJsonResponse.name);
   });
 });
