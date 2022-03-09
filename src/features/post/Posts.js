@@ -10,6 +10,8 @@ import { fetchList as fetchPosts } from '.';
 
 import { setSelected as setSelectedUser } from 'features/user';
 
+import styles from './Posts.module.scss';
+
 export default function Posts({ userId: userIdParam = null }) {
   const { posts, users, selectedUserId } = useSelector(
     ({
@@ -52,9 +54,11 @@ export default function Posts({ userId: userIdParam = null }) {
     let renderBodyResult;
 
     if (fetchingError) {
-      renderBodyResult = <Alert variant="danger">Fetching posts error</Alert>;
+      renderBodyResult = <Alert variant="danger">Error fetching posts</Alert>;
     } else if (loadingStep < READY) {
       renderBodyResult = <LoadingSpinner ariaLabel="Loading posts" />;
+    } else if (!fetchedPosts.length > 0) {
+      renderBodyResult = <Alert variant="info">User with no posts to show</Alert>;
     } else {
       const postsSort = (postId1, postId2) => {
         const post1 = posts.byId[postId1];
@@ -98,23 +102,27 @@ export default function Posts({ userId: userIdParam = null }) {
             <Modal.Title role="heading">{user.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body role="list">
-            {listingPosts.map((postId) => {
-              const post = posts.byId[postId];
+            {!listingPosts.length > 0 ? (
+              <Alert variant="info">All fetched posts have been hidden</Alert>
+            ) : (
+              listingPosts.map((postId) => {
+                const post = posts.byId[postId];
 
-              return (
-                <Card key={postId} role="listitem">
-                  <Card.Header>
-                    <Card.Title>{post.title}</Card.Title>
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Text>{post.body}</Card.Text>
-                    <Button variant="primary" onClick={() => handleHidePostClick(postId)}>
-                      Hide
-                    </Button>
-                  </Card.Body>
-                </Card>
-              );
-            })}
+                return (
+                  <Card key={postId} role="listitem" className={styles.post}>
+                    <Card.Header>
+                      <Card.Title>{post.title}</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Card.Text>{post.body}</Card.Text>
+                      <Button variant="primary" onClick={() => handleHidePostClick(postId)}>
+                        Hide
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                );
+              })
+            )}
             <Button variant="primary" onClick={handleShowMoreClick} disabled={listingIndex >= fetchedPosts.length}>
               Show more
             </Button>
