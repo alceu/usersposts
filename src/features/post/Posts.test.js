@@ -110,7 +110,7 @@ describe('Posts list', () => {
 
     render(<Posts userId={mockedUser.id} />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Fetching posts error');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Error fetching posts');
 
     expect(screen.queryByLabelText('Loading posts')).not.toBeInTheDocument();
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
@@ -152,7 +152,7 @@ describe('Posts list', () => {
     expect(postsListItems).toHaveLength(4);
 
     const [, , , fourthPostListItem] = postsListItems;
-    expect(fourthPostListItem).toHaveTextContent(fifthPostJsonResponse.body);
+    expect(fourthPostListItem).toHaveTextContent(fifthPostJsonResponse.title);
     expect(fourthPostListItem).toHaveTextContent(fifthPostJsonResponse.body);
   });
 });

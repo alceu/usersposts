@@ -10,6 +10,8 @@ import Posts from 'features/post/Posts';
 
 import { setSelected as setSelectedUser, fetchList as fetchUsers } from '.';
 
+import styles from './Users.module.scss';
+
 export default function Users() {
   const { users, selectedUserId } = useSelector(
     ({
@@ -46,9 +48,11 @@ export default function Users() {
     let renderBodyResult;
 
     if (fetchingError) {
-      renderBodyResult = <Alert variant="danger">Fetching users error</Alert>;
+      renderBodyResult = <Alert variant="danger">Error fetching users</Alert>;
     } else if (loadingStep < READY) {
       renderBodyResult = <LoadingSpinner ariaLabel="Loading users" />;
+    } else if (!fetchedUsers.length > 0) {
+      renderBodyResult = <Alert variant="info">No users to show</Alert>;
     } else {
       const usersSort = (userId1, userId2) => {
         const user1 = users.byId[userId1];
@@ -85,7 +89,11 @@ export default function Users() {
                 );
               })}
             </ListGroup>
-            <Button variant="primary" onClick={handleShowMoreClick} disabled={listingIndex >= fetchedUsers.length}>
+            <Button
+              variant="primary"
+              className={styles['show-more']}
+              onClick={handleShowMoreClick}
+              disabled={listingIndex >= fetchedUsers.length}>
               Show more
             </Button>
             {selectedUserId && <Posts userId={selectedUserId} />}
