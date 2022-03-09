@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col';
 export default function App() {
   return (
     <Container>
-      <Row fluid="md">
+      <Row fluid="sm">
         <Col>
           <h1>Users posts</h1>
           <Users />
