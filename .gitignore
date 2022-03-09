@@ -25,6 +25,7 @@ yarn-error.log*
 .env
 
 .eslintcache
+.stylelintcache 
 
 .vscode 
 .profile 
