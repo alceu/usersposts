@@ -57,7 +57,7 @@ describe('Users list', () => {
 
     render(<Users />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Fetching users error');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Error fetching users');
 
     expect(screen.queryByLabelText('Loading users')).not.toBeInTheDocument();
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
@@ -71,7 +71,6 @@ describe('Users list', () => {
 
     const [, secondUserOption] = await screen.findAllByRole('option');
     fireEvent.click(secondUserOption);
-
     expect(secondUserOption).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByText('Loading users')).not.toBeInTheDocument();
     expect(screen.getByText(renderPostsMockResult)).toBeInTheDocument();
