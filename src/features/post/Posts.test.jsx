@@ -20,7 +20,7 @@ describe('Posts list', () => {
   const requestUrl = `${apiUrl}/posts`;
   const restHandler = (requestHandler) => rest.get(requestUrl, requestHandler);
   const defaultRequestHandler = async (/* request: */ { url: { searchParams } }, response, context) =>
-    parseInt(searchParams.get('userId')) !== mockedUser.id
+    parseInt(searchParams.get('userId'), 10) !== mockedUser.id
       ? response(context.status(400), context.json({ message: 'Unknown userId' }))
       : response(context.json(mockedJsonResponse), context.delay(150));
   const failRequestHandler = async (request, response, context) =>

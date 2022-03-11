@@ -6,9 +6,8 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
 
-import { fetchList as fetchPosts } from '.';
-
 import { setSelected as setSelectedUser } from 'features/user';
+import { fetchList as fetchPosts } from '.';
 
 import styles from './Posts.module.scss';
 
