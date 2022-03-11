@@ -24,7 +24,13 @@ For VStudio users:
 
 That's it.
 
+Dev-onboarding screencast:
+
+[https://alceumedeiros.com/usersposts-frontend-dev-onboarding-screencast](https://alceumedeiros.com/usersposts-frontend-dev-onboarding-screencast)
+
 ## Git Flow
+
+Reference cheatsheet:
 
 [https://danielkummer.github.io/git-flow-cheatsheet/](https://danielkummer.github.io/git-flow-cheatsheet/)
 

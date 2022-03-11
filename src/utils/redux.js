@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export const createEntitySlice = (sliceName) => {
+// eslint-disable-next-line import/prefer-default-export
+export function createEntitySlice(sliceName) {
   const initialState = {
     byId: {},
     allIds: null,
@@ -44,4 +45,4 @@ export const createEntitySlice = (sliceName) => {
   };
 
   return slice;
-};
+}
