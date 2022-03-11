@@ -4,13 +4,17 @@ First steps:
 
 ### `git clone`
 
+### `cd usersposts-frontend`
+
 ### `git flow init`
+
+(set all default values)
 
 ### `cp sample-.env .env`
 
 ### `npm install`
 
-### `npm prepare`
+### `npm run prepare`
 
 For VStudio users:
 
