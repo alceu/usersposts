@@ -1,6 +1,6 @@
 module.exports = {
-  './**/*.js': ['npm run lint-fix:js -- --cache'],
+  './**/*.+(js|jsx)': ['npm run lint-fix:js -- --cache'],
   './src/**/*.scss': ['npm run lint-fix:style -- --cache'],
-  './**/*.+(js|md|scss|json)': ['npm run format'],
-  './src/**/*.js': ['npm run test:staged'],
+  './**/*.+(js|jsx|md|scss|json)': ['npm run format'],
+  './src/**/*.+(js|jsx)': ['npm run test:staged'],
 };
