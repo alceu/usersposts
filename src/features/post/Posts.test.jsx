@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, within } from '@testing-library/react';
+import { screen, fireEvent, within, cleanup } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { render } from 'utils/test';
@@ -29,53 +29,37 @@ describe('Posts list', () => {
   const server = setupServer(restHandler(defaultRequestHandler));
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
+  cleanup();
   afterAll(() => server.close());
 
   const preloadedState = {
     entities: { users: { allIds: [mockedUser.id], byId: { [mockedUser.id]: mockedUser } } },
   };
 
-  it('fetches and lists posts by userId param ordered by title on request success', async () => {
-    render(<Posts userId={mockedUser.id} />, { preloadedState });
+  // jest.mock('react-router-dom', () => {
+  //   const originalModule = jest.requireActual('react-router-dom');
+
+  //   return {
+  //     ...originalModule,
+  //     useParams: jest.fn(() => {
+  //       return { userId: `${mockedUser.id}` };
+  //     }),
+  //     useNavigate: jest.fn(),
+  //     // useRouteMatch: jest.fn(() => {
+  //     //   return { url: '/entry' };
+  //     // }),
+  //   };
+  // });
+  // jest.spyOn(reactRouterDomDefaultExport, 'useParams').mockReturnValue({ userId: mockedUser.id });
+
+  it('fetches and lists posts by selected user route ordered by title on request success', async () => {
+    render(<Posts />, { preloadedState, route: `/${mockedUser.id}`, path: `/:userId` });
 
     expect(screen.getByLabelText('Loading posts')).toBeInTheDocument();
 
-    expect(await screen.findByRole('heading')).toHaveTextContent(mockedUser.name);
-
-    expect(await screen.findByRole('list')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Loading posts')).not.toBeInTheDocument();
-
-    const postsListItems = await screen.findAllByRole('listitem');
-    expect(postsListItems).toHaveLength(3);
-
-    const [firstPostListItem, secondPostListItem, thirdPostListItem] = postsListItems;
-    const [
-      firstPostJsonResponse,
-      secondPostJsonResponse,
-      thirdPostJsonResponse,
-      fourthPostJsonResponse,
-      fifthPostJsonResponse,
-    ] = mockedJsonResponse;
-
-    expect(firstPostListItem).toHaveTextContent(firstPostJsonResponse.title);
-    expect(firstPostListItem).toHaveTextContent(firstPostJsonResponse.body);
-    expect(secondPostListItem).toHaveTextContent(secondPostJsonResponse.title);
-    expect(secondPostListItem).toHaveTextContent(secondPostJsonResponse.body);
-    expect(thirdPostListItem).toHaveTextContent(fourthPostJsonResponse.title);
-    expect(thirdPostListItem).toHaveTextContent(fourthPostJsonResponse.body);
-
-    expect(screen.queryByText(thirdPostJsonResponse.title)).not.toBeInTheDocument();
-    expect(screen.queryByText(thirdPostJsonResponse.body)).not.toBeInTheDocument();
-    expect(screen.queryByText(fifthPostJsonResponse.title)).not.toBeInTheDocument();
-    expect(screen.queryByText(fifthPostJsonResponse.body)).not.toBeInTheDocument();
-  });
-
-  it('fetches and lists posts by selected user feature ordered by title on request success', async () => {
-    render(<Posts />, { preloadedState: { ...preloadedState, features: { user: { selected: mockedUser.id } } } });
-
-    expect(screen.getByLabelText('Loading posts')).toBeInTheDocument();
-
-    expect(await screen.findByRole('heading')).toHaveTextContent(mockedUser.name);
+    const [title, subtitle] = await screen.findAllByRole('heading');
+    expect(title).toHaveTextContent(mockedUser.name);
+    expect(subtitle).toHaveTextContent('Listing posts');
 
     expect(await screen.findByRole('list')).toBeInTheDocument();
     expect(screen.queryByLabelText('Loading posts')).not.toBeInTheDocument();
@@ -108,7 +92,7 @@ describe('Posts list', () => {
   it('fetches and shows error message on request failure', async () => {
     server.use(restHandler(failRequestHandler));
 
-    render(<Posts userId={mockedUser.id} />);
+    render(<Posts />, { preloadedState, route: `/${mockedUser.id}`, path: `/:userId` });
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Error fetching posts');
 
@@ -117,7 +101,7 @@ describe('Posts list', () => {
   });
 
   it('hides second post from the list', async () => {
-    render(<Posts userId={mockedUser.id} />, { preloadedState });
+    render(<Posts />, { preloadedState, route: `/${mockedUser.id}`, path: `/:userId` });
 
     const [, secondPostJsonResponse] = mockedJsonResponse;
     const [, secondPostListItem] = await screen.findAllByRole('listitem');
@@ -136,7 +120,7 @@ describe('Posts list', () => {
   });
 
   it('shows the fourth post after clicking show more button', async () => {
-    render(<Posts userId={mockedUser.id} />, { preloadedState });
+    render(<Posts />, { preloadedState, route: `/${mockedUser.id}`, path: `/:userId` });
 
     let postsListItems = await screen.findAllByRole('listitem');
     expect(postsListItems).toHaveLength(3);

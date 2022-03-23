@@ -6,9 +6,6 @@ import { render } from 'utils/test';
 import { apiUrl } from 'app/api';
 import Users from './Users';
 
-const renderPostsMockResult = 'MockedPosts';
-jest.mock('features/post/Posts', () => () => renderPostsMockResult);
-
 describe('Users list', () => {
   const mockedJsonResponse = [
     { id: 1, name: 'Abraham Smith' },
@@ -66,14 +63,15 @@ describe('Users list', () => {
   it('selects second user from the list and renders posts list feature', async () => {
     render(<Users />);
 
-    expect(screen.queryByRole('option', { selected: true })).not.toBeInTheDocument();
-    expect(screen.queryByText(renderPostsMockResult)).not.toBeInTheDocument();
+    const options = await screen.findAllByRole('option');
+    options.forEach((option) => {
+      expect(option).not.toHaveAttribute('aria-current');
+    });
 
     const [, secondUserOption] = await screen.findAllByRole('option');
     fireEvent.click(secondUserOption);
-    expect(secondUserOption).toHaveAttribute('aria-selected', 'true');
+    expect(secondUserOption).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByText('Loading users')).not.toBeInTheDocument();
-    expect(screen.getByText(renderPostsMockResult)).toBeInTheDocument();
   });
 
   it('shows the fourth user after clicking show more button', async () => {

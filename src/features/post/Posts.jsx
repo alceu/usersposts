@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
 
-import { setSelected as setSelectedUser } from 'features/user';
 import { fetchList as fetchPosts } from '.';
 
 import styles from './Posts.module.scss';
 
-export default function Posts({ userId: userIdParam = null }) {
-  const { posts, users, selectedUserId } = useSelector(
-    ({
-      entities,
-      features: {
-        user: { selected },
-      },
-    }) => ({
-      posts: entities.posts,
-      users: entities.users,
-      selectedUserId: selected,
-    }),
-  );
-  const userId = userIdParam || selectedUserId;
+export default function Posts() {
+  const { posts, users } = useSelector(({ entities }) => ({
+    posts: entities.posts,
+    users: entities.users,
+  }));
+  const { userId: userIdRequestParam } = useParams();
+  const userId = parseInt(userIdRequestParam, 10);
 
   const [INITIAL, READY] = [0, 1];
   const [loadingStep, setLoadingStep] = useState(INITIAL);
@@ -48,6 +41,8 @@ export default function Posts({ userId: userIdParam = null }) {
   const [showModal, setShowModal] = useState(true);
 
   const [hiddenPosts, setHiddenPosts] = useState([]);
+
+  const navigate = useNavigate();
 
   const renderBody = () => {
     let renderBodyResult;
@@ -86,7 +81,7 @@ export default function Posts({ userId: userIdParam = null }) {
 
       const handleCloseClick = () => setShowModal(false);
 
-      const handleExitedModalTransition = () => dispatch(setSelectedUser(null));
+      const handleExitedModalTransition = () => navigate('../');
 
       renderBodyResult = (
         <Modal
@@ -101,6 +96,7 @@ export default function Posts({ userId: userIdParam = null }) {
             <Modal.Title role="heading">{user.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body role="list">
+            <h4>Listing posts</h4>
             {!listingPosts.length > 0 ? (
               <Alert variant="info">All fetched posts have been hidden</Alert>
             ) : (

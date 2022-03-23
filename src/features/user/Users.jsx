@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { NavLink } from 'react-router-dom';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
-import Posts from 'features/post/Posts';
 
-import { setSelected as setSelectedUser, fetchList as fetchUsers } from '.';
+import { fetchList as fetchUsers } from '.';
 
 import styles from './Users.module.scss';
 
 export default function Users() {
-  const { users, selectedUserId } = useSelector(
-    ({
-      entities,
-      features: {
-        user: { selected },
-      },
-    }) => ({
-      users: entities.users,
-      selectedUserId: selected,
-    }),
-  );
+  const { users } = useSelector(({ entities }) => ({
+    users: entities.users,
+  }));
 
   const [INITIAL, READY] = [0, 1];
   const [loadingStep, setLoadingStep] = useState(INITIAL);
@@ -62,43 +52,30 @@ export default function Users() {
       };
       const listingUsers = [...fetchedUsers].sort(usersSort).slice(0, listingIndex);
 
-      const handleSelectUserClick = (userId) => dispatch(setSelectedUser(userId));
       const handleShowMoreClick = () => setListingIndex((current) => current + listingLimit);
-
       renderBodyResult = (
-        <Row>
-          <Col>
-            <ListGroup role="listbox" aria-multiselectable={false}>
-              <header>
-                <h2>Listing users</h2>
-                <p>Select one:</p>
-              </header>
-              {listingUsers.map((userId) => {
-                const user = users.byId[userId];
+        <>
+          <h2>Listing users</h2>
+          <p>Select one:</p>
+          <ListGroup role="listbox" aria-multiselectable={false}>
+            {listingUsers.map((userId) => {
+              const user = users.byId[userId];
 
-                return (
-                  <ListGroup.Item
-                    key={userId}
-                    role="option"
-                    aria-selected={userId === selectedUserId}
-                    active={userId === selectedUserId}
-                    action
-                    onClick={() => handleSelectUserClick(userId)}>
-                    {user.name}
-                  </ListGroup.Item>
-                );
-              })}
-            </ListGroup>
-            <Button
-              variant="primary"
-              className={styles['show-more']}
-              onClick={handleShowMoreClick}
-              disabled={listingIndex >= fetchedUsers.length}>
-              Show more
-            </Button>
-            {selectedUserId && <Posts userId={selectedUserId} />}
-          </Col>
-        </Row>
+              return (
+                <ListGroup.Item key={userId} as={NavLink} to={`${userId}`} role="option">
+                  {user.name}
+                </ListGroup.Item>
+              );
+            })}
+          </ListGroup>
+          <Button
+            variant="primary"
+            className={styles['show-more']}
+            onClick={handleShowMoreClick}
+            disabled={listingIndex >= fetchedUsers.length}>
+            Show more
+          </Button>
+        </>
       );
     }
 
