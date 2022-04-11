@@ -1,12 +1,9 @@
-import api from 'app/api';
-import { addPosts } from 'app/store/entities';
-
-const endpoint = '/posts';
+import postsActions from 'app/store/entities/posts';
+import usersActions from 'app/store/entities/users';
 
 // eslint-disable-next-line import/prefer-default-export
-export const fetchList = (userId) => (dispatch) =>
-  api.get(`${endpoint}?userId=${userId}`).then((response) => {
-    const { data: posts } = response;
-
-    return dispatch(addPosts(posts));
-  });
+export const fetchData = (userId, index, limit) => (dispatch) =>
+  Promise.all([
+    dispatch(usersActions.checkIds([userId])),
+    dispatch(postsActions.fetch({ config: { params: { userId, _start: index, _limit: limit } } })),
+  ]);

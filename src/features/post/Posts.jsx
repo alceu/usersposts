@@ -1,48 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import LoadingSpinner from 'components/LoadingSpinner';
 
-import { fetchList as fetchPosts } from '.';
+import { fetchData as fetchPostsData } from '.';
 
 import styles from './Posts.module.scss';
 
-export default function Posts() {
+export const defaultLimit = 3;
+
+export default function Posts({ userId, limit: listingLimit = defaultLimit, onClose, onShowMore }) {
   const { posts, users } = useSelector(({ entities }) => ({
     posts: entities.posts,
     users: entities.users,
   }));
-  const { userId: userIdRequestParam } = useParams();
-  const userId = parseInt(userIdRequestParam, 10);
 
-  const [INITIAL, READY] = [0, 1];
+  const [INITIAL, READY, MORE] = [0, 1, 2];
   const [loadingStep, setLoadingStep] = useState(INITIAL);
   const [fetchingError, setFechingError] = useState(false);
   const [fetchedPosts, setFechedPosts] = useState(null);
+  const [hasMoreToFetch, setHasMoreToFetch] = useState(true);
+
+  const userIdPrevRef = useRef(userId);
+
+  const maxFetched = useRef(0);
+
+  const listingLimitPrevRef = useRef(listingLimit);
+  const [fetchIndex, fetchLimit] =
+    listingLimit === listingLimitPrevRef.current || userId !== userIdPrevRef.current
+      ? [0, listingLimit]
+      : [listingLimitPrevRef.current, listingLimit - listingLimitPrevRef.current];
 
   const dispatch = useDispatch();
-
   useEffect(() => {
-    dispatch(fetchPosts(userId))
-      .then((postsIds) => {
-        setFechedPosts(postsIds);
-        setLoadingStep((current) => current + 1);
-      })
-      .catch(() => setFechingError(true));
-  }, [dispatch, userId]);
+    const isOtherUser = userId !== userIdPrevRef.current;
+    const willFetch = isOtherUser || fetchIndex + fetchLimit > maxFetched.current;
 
-  const listingLimit = 3;
-  const [listingIndex, setListingIndex] = useState(listingLimit);
+    if (isOtherUser) {
+      userIdPrevRef.current = userId;
+    }
+    if (willFetch) {
+      setLoadingStep((currentStep) => {
+        let nextStep = currentStep;
+        if (currentStep === READY) {
+          nextStep = isOtherUser ? INITIAL : MORE;
+        }
+        return nextStep;
+      });
+      dispatch(fetchPostsData(userId, fetchIndex, fetchLimit))
+        .then(([, postsIds]) => {
+          if (isOtherUser) {
+            maxFetched.current = postsIds.length;
+            setFechedPosts(postsIds);
+          } else {
+            maxFetched.current += postsIds.length;
+            setFechedPosts((current) => (!current ? postsIds : [...current, ...postsIds]));
+          }
+          if (postsIds.length < fetchLimit) {
+            setHasMoreToFetch(false);
+          }
+          setLoadingStep(READY);
+        })
+        .catch(() => setFechingError(true));
+    }
+  }, [dispatch, INITIAL, READY, MORE, userId, fetchIndex, fetchLimit]);
 
   const [showModal, setShowModal] = useState(true);
 
   const [hiddenPosts, setHiddenPosts] = useState([]);
-
-  const navigate = useNavigate();
 
   const renderBody = () => {
     let renderBodyResult;
@@ -55,33 +83,29 @@ export default function Posts() {
       renderBodyResult = <Alert variant="info">User with no posts to show</Alert>;
     } else {
       const postsSort = (postId1, postId2) => {
-        const post1 = posts.byId[postId1];
-        const post2 = posts.byId[postId2];
+        const post1 = posts.entities[postId1];
+        const post2 = posts.entities[postId2];
 
         return post1.title.localeCompare(post2.title);
       };
-      const postsFilter = (postId) => {
-        const post = posts.byId[postId];
-
-        return post.userId === userId;
-      };
       const hiddenPostsFilter = (postId) => !hiddenPosts.includes(postId);
 
-      const listingPosts = [...fetchedPosts]
-        .filter(postsFilter)
-        .sort(postsSort)
-        .slice(0, listingIndex)
-        .filter(hiddenPostsFilter);
+      const listingPosts = [...fetchedPosts].sort(postsSort).filter(hiddenPostsFilter).slice(0, listingLimit);
 
-      const user = users.byId[userId];
+      const user = users.entities[userId];
 
-      const handleShowMoreClick = () => setListingIndex((current) => current + listingLimit);
+      const handleShowMoreClick = () => {
+        listingLimitPrevRef.current = listingLimit;
+        onShowMore(listingLimit + defaultLimit);
+      };
 
       const handleHidePostClick = (postId) => setHiddenPosts((current) => [...current, postId]);
 
       const handleCloseClick = () => setShowModal(false);
 
-      const handleExitedModalTransition = () => navigate('../');
+      const handleExitedModalTransition = () => onClose && onClose();
+
+      const hasDisabledShowButton = loadingStep === MORE || (listingLimit >= maxFetched.current && !hasMoreToFetch);
 
       renderBodyResult = (
         <Modal
@@ -101,7 +125,7 @@ export default function Posts() {
               <Alert variant="info">All fetched posts have been hidden</Alert>
             ) : (
               listingPosts.map((postId) => {
-                const post = posts.byId[postId];
+                const post = posts.entities[postId];
 
                 return (
                   <Card key={postId} role="listitem" className={styles.post}>
@@ -118,8 +142,9 @@ export default function Posts() {
                 );
               })
             )}
-            <Button variant="primary" onClick={handleShowMoreClick} disabled={listingIndex >= fetchedPosts.length}>
+            <Button variant="primary" size="lg" onClick={handleShowMoreClick} disabled={hasDisabledShowButton}>
               Show more
+              {loadingStep === MORE && <LoadingSpinner ariaLabel="Loading posts" />}
             </Button>
           </Modal.Body>
         </Modal>

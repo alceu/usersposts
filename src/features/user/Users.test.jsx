@@ -60,18 +60,19 @@ describe('Users list', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
-  it('selects second user from the list and renders posts list feature', async () => {
-    render(<Users />);
+  it('selects second user from the list', async () => {
+    const onUserSelectMock = jest.fn();
+    render(<Users onUserSelect={onUserSelectMock} />);
 
-    const options = await screen.findAllByRole('option');
-    options.forEach((option) => {
-      expect(option).not.toHaveAttribute('aria-current');
-    });
+    expect(screen.queryByRole('option', { current: true })).not.toBeInTheDocument();
 
     const [, secondUserOption] = await screen.findAllByRole('option');
     fireEvent.click(secondUserOption);
-    expect(secondUserOption).toHaveAttribute('aria-current', 'page');
+
     expect(screen.queryByText('Loading users')).not.toBeInTheDocument();
+
+    const [, secondUserJsonResponse] = mockedJsonResponse;
+    expect(onUserSelectMock).toHaveBeenCalledWith(secondUserJsonResponse.id);
   });
 
   it('shows the fourth user after clicking show more button', async () => {
