@@ -1,10 +1,25 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore as baseConfigureStore, combineReducers } from '@reduxjs/toolkit';
+import api from 'app/api';
 import entities from './entities';
 
-export const appReducer = {
+const appReducer = {
   entities: combineReducers(entities),
 };
 
-export default configureStore({
-  reducer: appReducer,
+export const configureStore = ({ reducer = appReducer, preloadedState }) =>
+  baseConfigureStore({
+    reducer,
+    preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: {
+          extraArgument: api,
+        },
+      }),
+  });
+
+const store = configureStore({
+  appReducer,
 });
+
+export default store;
