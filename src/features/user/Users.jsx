@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -10,7 +9,7 @@ import { fetchList as fetchUsers } from '.';
 
 import styles from './Users.module.scss';
 
-export default function Users() {
+export default function Users({ selectedUserId = null, onUserSelect }) {
   const { users } = useSelector(({ entities }) => ({
     users: entities.users,
   }));
@@ -45,24 +44,33 @@ export default function Users() {
       renderBodyResult = <Alert variant="info">No users to show</Alert>;
     } else {
       const usersSort = (userId1, userId2) => {
-        const user1 = users.byId[userId1];
-        const user2 = users.byId[userId2];
+        const user1 = users.entities[userId1];
+        const user2 = users.entities[userId2];
 
         return user1.name.localeCompare(user2.name);
       };
       const listingUsers = [...fetchedUsers].sort(usersSort).slice(0, listingIndex);
 
       const handleShowMoreClick = () => setListingIndex((current) => current + listingLimit);
+
+      const handleSelecUserClick = (userId) => onUserSelect(userId);
+
       renderBodyResult = (
         <>
           <h2>Listing users</h2>
           <p>Select one:</p>
           <ListGroup role="listbox" aria-multiselectable={false}>
             {listingUsers.map((userId) => {
-              const user = users.byId[userId];
+              const user = users.entities[userId];
 
               return (
-                <ListGroup.Item key={userId} as={NavLink} to={`${userId}`} role="option">
+                <ListGroup.Item
+                  key={userId}
+                  role="option"
+                  action
+                  onClick={() => handleSelecUserClick(userId)}
+                  active={userId === selectedUserId}
+                  aria-current={userId === selectedUserId}>
                   {user.name}
                 </ListGroup.Item>
               );
