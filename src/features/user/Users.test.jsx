@@ -4,7 +4,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { render } from 'utils/test';
 import { apiUrl } from 'app/api';
-import Users from './Users';
+import Users, { defaultLimit as defaultLimitParam } from './Users';
 
 describe('Users list', () => {
   const mockedJsonResponse = [
@@ -16,8 +16,17 @@ describe('Users list', () => {
 
   const requestUrl = `${apiUrl}/users`;
   const restHandler = (requestHandler) => rest.get(requestUrl, requestHandler);
-  const defaultRequestHandler = async (request, response, context) =>
-    response(context.json(mockedJsonResponse), context.delay(150));
+
+  const defaultRequestHandler = async (/* request: */ { url: { searchParams } }, response, context) => {
+    const [index, limit] = [parseInt(searchParams.get('_start'), 10), parseInt(searchParams.get('_limit'), 10)];
+    const requestResult = response(
+      context.json(mockedJsonResponse.slice(index || 0, limit || mockedJsonResponse.length)),
+      context.delay(150),
+    );
+
+    return requestResult;
+  };
+
   const failRequestHandler = async (request, response, context) =>
     response(context.status(500), context.json({ message: 'testErrorMessage' }));
 
@@ -75,22 +84,19 @@ describe('Users list', () => {
     expect(onUserSelectMock).toHaveBeenCalledWith(secondUserJsonResponse.id);
   });
 
-  it('shows the fourth user after clicking show more button', async () => {
-    render(<Users />);
+  it('calls show more function with new users list limit after clicking on show more button', async () => {
+    const onShowMoreMock = jest.fn();
+    const limitParam = 3;
+    render(<Users limit={limitParam} onShowMore={onShowMoreMock} />);
 
-    let usersOptions = await screen.findAllByRole('option');
-    expect(usersOptions).toHaveLength(3);
+    const usersOptions = await screen.findAllByRole('option');
+    expect(usersOptions).toHaveLength(limitParam);
 
     const [, , , fourthUserJsonResponse] = mockedJsonResponse;
     expect(screen.queryByText(fourthUserJsonResponse.name)).not.toBeInTheDocument();
 
     const showMoreButton = screen.getByRole('button', { name: 'Show more' });
     fireEvent.click(showMoreButton);
-
-    usersOptions = await screen.findAllByRole('option');
-    expect(usersOptions).toHaveLength(4);
-
-    const [, , , fourthUserOption] = usersOptions;
-    expect(fourthUserOption).toHaveTextContent(fourthUserJsonResponse.name);
+    expect(onShowMoreMock).toHaveBeenCalledWith(limitParam + defaultLimitParam);
   });
 });

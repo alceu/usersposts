@@ -13,11 +13,21 @@ function UsersPage() {
   const { userId: userIdPathParam } = useParams();
   const selectedUserId = parseInt(userIdPathParam, 10);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const limit = (searchParams.get('usersLimit') && parseInt(searchParams.get('usersLimit'), 10)) || undefined;
+
   const handleSelectUser = (userId) => navigate(`${userId}`);
+
+  const handleShowMore = (newLimit) => setSearchParams({ usersLimit: newLimit });
 
   return (
     <>
-      <Users selectedUserId={selectedUserId} onUserSelect={handleSelectUser} />
+      <Users
+        selectedUserId={selectedUserId}
+        onUserSelect={handleSelectUser}
+        limit={limit}
+        onShowMore={handleShowMore}
+      />
       <Outlet />
     </>
   );
